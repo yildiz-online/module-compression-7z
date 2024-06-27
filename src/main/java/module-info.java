@@ -14,6 +14,11 @@
  *
  */
 
+/**
+ * Module to compress and uncompress files using the 7zip library.
+ *
+ * @author Grégory Van den Borre
+ */
 open module be.yildizgames.module.compression.sevenzip {
 
     exports be.yildizgames.module.compression.sevenzip;
