@@ -25,6 +25,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
+ * This class is used to compress and uncompress files using the 7zip library.
+ * It relies on native libraries to provide the compression and decompression functionality.
+ *
  * @author Grégory Van den Borre
  */
 public class Archiver {
@@ -33,6 +36,14 @@ public class Archiver {
 
     private final Path sevenzipFile;
 
+    /**
+     * Construct a new Archiver.
+     *
+     * @param libDirectory  The directory containing the native libraries.
+     * @param runtimeDirectory The directory containing the runtime libraries.
+     * @param sevenZipFile The path to the 7zip native library.
+     * @throws IllegalArgumentException If the native library or the runtime library cannot be loaded.
+     */
     public Archiver(Path libDirectory, Path runtimeDirectory, Path sevenZipFile) {
         super();
         System.load(runtimeDirectory.resolve("libwinpthread-1.dll").toString());
@@ -42,7 +53,14 @@ public class Archiver {
         this.sevenzipFile = sevenZipFile;
     }
 
-    public void archive(List<Path> source, Path archive) {
+    /**
+     * Compress multiple files into an archive.
+     *
+     * @param source The list of files to compress.
+     * @param archive The path to the archive file.
+     * @throws IllegalArgumentException If the native library or the runtime library cannot be loaded.
+     */
+    public final void archive(List<Path> source, Path archive) {
         try (var session = Arena.ofConfined()) {
             var lk = SymbolLookup.libraryLookup(lib, session);
             lk.find("compressMultipleFiles").ifPresentOrElse(c -> {
@@ -79,6 +97,13 @@ public class Archiver {
         }
     }
 
+    /**
+     * Unarchive an archive into a directory.
+     *
+     * @param archive The path to the archive file.
+     * @param destinationDirectory The directory where the files will be extracted.
+     * @throws IllegalArgumentException If the native library or the runtime library cannot be loaded.
+     */
     public void unarchive(Path archive, Path destinationDirectory) {
         try (var session = Arena.ofConfined()) {
             var lk = SymbolLookup.libraryLookup(lib, session);
@@ -105,6 +130,13 @@ public class Archiver {
         }
     }
 
+    /**
+     * Compress a single file into an archive.
+     *
+     * @param source The path to the file to compress.
+     * @param archive The path to the archive file.
+     * @throws IllegalArgumentException If the native library or the runtime library cannot be loaded.
+     */
     public void archive(Path source, Path archive) {
         try (var session = Arena.ofConfined()) {
             var lk = SymbolLookup.libraryLookup(lib, session);
