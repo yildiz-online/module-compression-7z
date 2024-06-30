@@ -46,11 +46,14 @@ public class Archiver {
      */
     public Archiver(Path libDirectory, Path runtimeDirectory, Path sevenZipFile) {
         super();
-        System.load(runtimeDirectory.resolve("libwinpthread-1.dll").toString());
         System.load(runtimeDirectory.resolve("libgcc_s_seh-1.dll").toString());
         System.load(runtimeDirectory.resolve("libstdc++-6.dll").toString());
         this.lib = libDirectory.resolve("libmodule_compression_7z.dll");
         this.sevenzipFile = sevenZipFile;
+    }
+
+    public Archiver(Path libDirectory) {
+        this(libDirectory, libDirectory, libDirectory.resolve("7z.dll"));
     }
 
     /**
