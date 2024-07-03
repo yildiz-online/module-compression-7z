@@ -23,8 +23,11 @@ open module be.yildizgames.module.compression.sevenzip {
 
     requires be.yildizgames.module.compression;
     requires be.yildizgames.common.hashing;
+    requires org.apache.commons.compress;
+    requires org.tukaani.xz;
 
     provides be.yildizgames.module.compression.FileInfoRetrieverProvider with be.yildizgames.module.compression.sevenzip.SevenZipFileInfoRetrieverProvider;
+    provides be.yildizgames.module.compression.ArchiverProvider with be.yildizgames.module.compression.sevenzip.SevenZipArchiverProvider;
 
     exports be.yildizgames.module.compression.sevenzip;
 }

@@ -16,30 +16,22 @@
 
 package be.yildizgames.module.compression.sevenzip;
 
-import be.yildizgames.module.compression.FileInfoRetriever;
-import be.yildizgames.module.compression.FileInfoRetrieverProvider;
-
-import java.nio.file.Path;
+import be.yildizgames.module.compression.Archiver;
+import be.yildizgames.module.compression.ArchiverProvider;
 
 /**
  * @author Grégory Van den Borre
  */
-public class SevenZipFileInfoRetrieverProvider implements FileInfoRetrieverProvider {
+public class SevenZipArchiverProvider implements ArchiverProvider {
 
-    public SevenZipFileInfoRetrieverProvider() {
+    private static final Archiver INSTANCE = new SevenZipArchiver();
+
+    public SevenZipArchiverProvider() {
         super();
     }
 
     @Override
-    public FileInfoRetriever getFileInfoRetriever(Path archive) {
-        if(archive.toString().endsWith(".7z")) {
-            return new SevenZipFileInfoRetriever(archive);
-        } else if(archive.toString().endsWith(".zip")) {
-            return new ZipFileInfoRetriever(archive);
-        } else {
-            throw new IllegalArgumentException("Only .7z or .zip archives are supported");
-        }
+    public Archiver getArchiver() {
+        return INSTANCE;
     }
-
-
 }

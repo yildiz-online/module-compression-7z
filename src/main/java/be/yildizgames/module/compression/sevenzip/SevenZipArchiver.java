@@ -148,13 +148,33 @@ public class SevenZipArchiver implements Archiver {
     }
 
     /**
+     * Unarchive a specufic file from an archive into a directory.
+     *
+     * @param archive The path to the archive file.
+     * @param destinationDirectory The directory where the files will be extracted.
+     * @throws IllegalArgumentException If the native library or the runtime library cannot be loaded.
+     */
+    @Override
+    public void unpack(Path archive, String fileName, Path destinationDirectory) {
+        init();
+        if(archive.toString().endsWith(".7z")) {
+            unarchive7z(archive, fileName, destinationDirectory);
+        } else if(archive.toString().endsWith(".zip")) {
+            unarchiveZip(archive, fileName, destinationDirectory);
+        } else {
+            throw new IllegalArgumentException("Only .7z archives are supported");
+        }
+    }
+
+    /**
      * Unarchive an archive into a directory.
      *
      * @param archive The path to the archive file.
      * @param destinationDirectory The directory where the files will be extracted.
      * @throws IllegalArgumentException If the native library or the runtime library cannot be loaded.
      */
-    public void unarchive(Path archive, Path destinationDirectory) {
+    @Override
+    public void unpack(Path archive, Path destinationDirectory) {
         init();
         if(archive.toString().endsWith(".7z")) {
             unarchive7z(archive, destinationDirectory);
@@ -191,6 +211,34 @@ public class SevenZipArchiver implements Archiver {
         }
     }
 
+    private void unarchiveZip(Path archive, String fileName, Path destinationDirectory) {
+        try (var session = Arena.ofConfined()) {
+            var lk = SymbolLookup.libraryLookup(lib, session);
+            lk.find("decompressFileZip").ifPresentOrElse(d -> {
+                var compressSingleFileFunction = Linker.nativeLinker().downcallHandle(d, FunctionDescriptor.of(
+                        ValueLayout.JAVA_INT,
+                        ValueLayout.ADDRESS,
+                        ValueLayout.ADDRESS,
+                        ValueLayout.ADDRESS,
+                        ValueLayout.ADDRESS));
+                try {
+                    var result = (int) compressSingleFileFunction.invokeExact(
+                            session.allocateFrom(this.sevenzipFile.toString()),
+                            session.allocateFrom(fileName),
+                            session.allocateFrom(archive.toString()),
+                            session.allocateFrom(destinationDirectory.toString()));
+                    if(result > 0) {
+                        logError(result, "Unarchive: " + archive + " to " + destinationDirectory);
+                    }
+                } catch (Throwable e) {
+                    System.getLogger(SevenZipArchiver.class.getName()).log(System.Logger.Level.ERROR, "", e);
+                }
+            }, () -> {
+                throw new IllegalArgumentException("Function not found: decompress");
+            });
+        }
+    }
+
     private void unarchive7z(Path archive, Path destinationDirectory) {
         try (var session = Arena.ofConfined()) {
             var lk = SymbolLookup.libraryLookup(lib, session);
@@ -204,6 +252,34 @@ public class SevenZipArchiver implements Archiver {
                     var result = (int) compressSingleFileFunction.invokeExact(
                             session.allocateFrom(this.sevenzipFile.toString()),
                             session.allocateFrom(archive.toString()),
+                            session.allocateFrom(destinationDirectory.toString()));
+                    if(result > 0) {
+                        logError(result, "Unarchive: " + archive + " to " + destinationDirectory);
+                    }
+                } catch (Throwable e) {
+                    System.getLogger(SevenZipArchiver.class.getName()).log(System.Logger.Level.ERROR, "", e);
+                }
+            }, () -> {
+                throw new IllegalArgumentException("Function not found: decompress");
+            });
+        }
+    }
+
+    private void unarchive7z(Path archive, String fileName, Path destinationDirectory) {
+        try (var session = Arena.ofConfined()) {
+            var lk = SymbolLookup.libraryLookup(lib, session);
+            lk.find("decompressFile7z").ifPresentOrElse(d -> {
+                var compressSingleFileFunction = Linker.nativeLinker().downcallHandle(d, FunctionDescriptor.of(
+                        ValueLayout.JAVA_INT,
+                        ValueLayout.ADDRESS,
+                        ValueLayout.ADDRESS,
+                        ValueLayout.ADDRESS,
+                        ValueLayout.ADDRESS));
+                try {
+                    var result = (int) compressSingleFileFunction.invokeExact(
+                            session.allocateFrom(this.sevenzipFile.toString()),
+                            session.allocateFrom(archive.toString()),
+                            session.allocateFrom(fileName),
                             session.allocateFrom(destinationDirectory.toString()));
                     if(result > 0) {
                         logError(result, "Unarchive: " + archive + " to " + destinationDirectory);

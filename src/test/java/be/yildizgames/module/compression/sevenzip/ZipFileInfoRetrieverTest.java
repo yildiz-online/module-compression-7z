@@ -16,30 +16,33 @@
 
 package be.yildizgames.module.compression.sevenzip;
 
-import be.yildizgames.module.compression.FileInfoRetriever;
-import be.yildizgames.module.compression.FileInfoRetrieverProvider;
+import be.yildizgames.common.hashing.Algorithm;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
 /**
  * @author Grégory Van den Borre
  */
-public class SevenZipFileInfoRetrieverProvider implements FileInfoRetrieverProvider {
+class ZipFileInfoRetrieverTest {
 
-    public SevenZipFileInfoRetrieverProvider() {
-        super();
+    @Test
+    void test() {
+        var retriever = new ZipFileInfoRetriever(Path.of("src/test/resources/archive.zip"));
+        var result = retriever.getFileInfo(Algorithm.CRC32);
+        Assertions.assertEquals("jpeg.jpg", result.getFirst().name());
+        var hash = result.getFirst().hashes().getFirst().getBytes();
+        Assertions.assertEquals(8, hash.length);
+        Assertions.assertEquals(-82, hash[0]);
+        Assertions.assertEquals(58, hash[1]);
+        Assertions.assertEquals(-88, hash[2]);
+        Assertions.assertEquals(-4, hash[3]);
+        Assertions.assertEquals(0, hash[4]);
+        Assertions.assertEquals(0, hash[5]);
+        Assertions.assertEquals(0, hash[6]);
+        Assertions.assertEquals(0, hash[7]);
+
     }
-
-    @Override
-    public FileInfoRetriever getFileInfoRetriever(Path archive) {
-        if(archive.toString().endsWith(".7z")) {
-            return new SevenZipFileInfoRetriever(archive);
-        } else if(archive.toString().endsWith(".zip")) {
-            return new ZipFileInfoRetriever(archive);
-        } else {
-            throw new IllegalArgumentException("Only .7z or .zip archives are supported");
-        }
-    }
-
 
 }

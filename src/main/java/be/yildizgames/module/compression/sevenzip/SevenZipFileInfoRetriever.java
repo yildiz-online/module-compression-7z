@@ -1,17 +1,16 @@
 /*
- * This file is part of the Yildiz-Engine project, licenced under the MIT License  (MIT)
- *  Copyright (c) 2024 Grégory Van den Borre
- *  More infos available: https://engine.yildiz-games.be
- *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- *  documentation files (the "Software"), to deal in the Software without restriction, including without limitation
- *  the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
- *  permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright
- *  notice and this permission notice shall be included in all copies or substantial portions of the  Software.
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- *  WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
- *  OR COPYRIGHT  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- *  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
+ This file is part of the Yildiz-Engine project, licenced under the MIT License  (MIT)
+ Copyright (c) 2024 Grégory Van den Borre
+ More infos available: https://engine.yildiz-games.be
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright
+ notice and this permission notice shall be included in all copies or substantial portions of the  Software.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ OR COPYRIGHT  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package be.yildizgames.module.compression.sevenzip;
@@ -21,24 +20,41 @@ import be.yildizgames.common.hashing.FileHash;
 import be.yildizgames.common.hashing.HashingFactory;
 import be.yildizgames.module.compression.FileInfo;
 import be.yildizgames.module.compression.FileInfoRetriever;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.sevenz.SevenZFileOptions;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
+ * This class will provide the file infos from a 7zip archive.
+ *
  * @author Grégory Van den Borre
  */
 public class SevenZipFileInfoRetriever implements FileInfoRetriever {
 
-    public SevenZipFileInfoRetriever() {
+    /**
+     * Path of the archive, never null.
+     */
+    private final Path path;
+
+    /**
+     * Construct a new instance.
+     *
+     * @param path Path of the archive, cannot be null.
+     */
+    public SevenZipFileInfoRetriever(final Path path) {
         super();
+        this.path = Objects.requireNonNull(path);
     }
 
     @Override
-    public List<FileInfo> getFileInfo(Algorithm... algorithms) {
+    public final List<FileInfo> getFileInfo(Algorithm... algorithms) {
         if (algorithms == null || algorithms.length == 0) {
             return noCompute();
         }
@@ -46,7 +62,7 @@ public class SevenZipFileInfoRetriever implements FileInfoRetriever {
     }
 
     private List<FileInfo> noCompute() {
-       /* var result = new ArrayList<FileInfo>();
+        var result = new ArrayList<FileInfo>();
         try (var sevenZFile = new SevenZFile(this.path.toFile(), SevenZFileOptions.builder().withTryToRecoverBrokenArchives(true).build())) {
             for (var e : sevenZFile.getEntries()) {
                 if (!e.isDirectory()) {
@@ -56,12 +72,11 @@ public class SevenZipFileInfoRetriever implements FileInfoRetriever {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-        return result;*/
-        return List.of();
+        return result;
     }
 
     private List<FileInfo> computeHashes(Algorithm... algorithms) {
-        /*var result = new ArrayList<FileInfo>();
+        var result = new ArrayList<FileInfo>();
         Map<String, List<FileHash>> hashes = new HashMap<>();
         for (var a : algorithms) {
             try (var sevenZFile = new SevenZFile(this.path.toFile(), SevenZFileOptions.builder().withTryToRecoverBrokenArchives(true).build())) {
@@ -82,7 +97,6 @@ public class SevenZipFileInfoRetriever implements FileInfoRetriever {
         for(var entry : hashes.entrySet()) {
             result.add(new FileInfo(entry.getKey(), entry.getValue()));
         }
-        return result;*/
-        return List.of();
+        return result;
     }
 }
