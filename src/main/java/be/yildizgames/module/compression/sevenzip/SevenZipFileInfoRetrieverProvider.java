@@ -14,17 +14,24 @@
  *
  */
 
+package be.yildizgames.module.compression.sevenzip;
+
+import be.yildizgames.module.compression.FileInfoRetriever;
+import be.yildizgames.module.compression.FileInfoRetrieverProvider;
+
 /**
- * Module to compress and uncompress files using the 7zip library.
- *
  * @author Grégory Van den Borre
  */
-open module be.yildizgames.module.compression.sevenzip {
+public class SevenZipFileInfoRetrieverProvider implements FileInfoRetrieverProvider {
 
-    requires be.yildizgames.module.compression;
-    requires be.yildizgames.common.hashing;
+    public SevenZipFileInfoRetrieverProvider() {
+        super();
+    }
 
-    provides be.yildizgames.module.compression.FileInfoRetrieverProvider with be.yildizgames.module.compression.sevenzip.SevenZipFileInfoRetrieverProvider;
+    @Override
+    public FileInfoRetriever getFileInfoRetriever() {
+        return new SevenZipFileInfoRetriever();
+    }
 
-    exports be.yildizgames.module.compression.sevenzip;
+
 }
