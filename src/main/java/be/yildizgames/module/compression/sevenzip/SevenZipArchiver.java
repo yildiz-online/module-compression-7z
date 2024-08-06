@@ -224,8 +224,8 @@ public class SevenZipArchiver implements Archiver {
                 try {
                     var result = (int) compressSingleFileFunction.invokeExact(
                             session.allocateFrom(this.sevenzipFile.toString()),
-                            session.allocateFrom(fileName),
                             session.allocateFrom(archive.toString()),
+                            session.allocateFrom(fileName),
                             session.allocateFrom(destinationDirectory.toString()));
                     if(result > 0) {
                         logError(result, "Unarchive: " + archive + " to " + destinationDirectory);
@@ -372,6 +372,9 @@ public class SevenZipArchiver implements Archiver {
                 break;
             case 1:
                 System.getLogger(SevenZipArchiver.class.getName()).log(System.Logger.Level.ERROR, "Destination file already exists " + context);
+                break;
+            case 2:
+                System.getLogger(SevenZipArchiver.class.getName()).log(System.Logger.Level.ERROR, "File not found " + context);
                 break;
             case 9:
                 System.getLogger(SevenZipArchiver.class.getName()).log(System.Logger.Level.ERROR, "Archive file does not exists " + context);
