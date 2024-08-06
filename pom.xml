@@ -39,7 +39,7 @@
   </parent>
 
   <artifactId>module-compression-7z</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
 
   <properties>
     <java.version>22</java.version>
