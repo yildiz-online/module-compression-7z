@@ -30,6 +30,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
+ * Retrieve info stored in a ZIP archive.
  * @author Grégory Van den Borre
  */
 public class ZipFileInfoRetriever implements FileInfoRetriever {
