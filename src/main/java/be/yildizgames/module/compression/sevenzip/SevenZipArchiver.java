@@ -148,7 +148,7 @@ public class SevenZipArchiver implements Archiver {
     }
 
     /**
-     * Unarchive a specufic file from an archive into a directory.
+     * Unarchive a specific file from an archive into a directory.
      *
      * @param archive The path to the archive file.
      * @param destinationDirectory The directory where the files will be extracted.
@@ -378,6 +378,9 @@ public class SevenZipArchiver implements Archiver {
                 break;
             case 9:
                 System.getLogger(SevenZipArchiver.class.getName()).log(System.Logger.Level.ERROR, "Archive file does not exists " + context);
+                break;
+            case 126:
+                System.getLogger(SevenZipArchiver.class.getName()).log(System.Logger.Level.ERROR, "7z Native library cannot be found in " + System.getProperty("NATIVE_7Z_PATH") + " to " + context);
                 break;
             default:
                 System.getLogger(SevenZipArchiver.class.getName()).log(System.Logger.Level.ERROR,"Unknown error code: " + errorCode + " : " + context);
